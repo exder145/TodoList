@@ -1,0 +1,1044 @@
+:root {
+    --bg-color: rgba(255, 255, 255, 0.7);
+    --text-color: #333333;
+    --header-bg-color: rgba(44, 62, 80, 0.8);
+    --header-text-color: #ffffff;
+    --button-bg-color: #3498db;
+    --button-hover-bg-color: #2980b9;
+    --note-bg-color: rgba(255, 255, 255, 0.5);
+    --modal-bg-color: rgba(255, 255, 255, 0.8);
+    --input-border-color: #dddddd;
+    --bg-image: url('imgs/cool-background.png');
+    --note-text-color: #333333;
+    --slide-ease: cubic-bezier(.4,-0.3,.6,1.3);
+    --easing: var(--slide-ease);
+    --speed: 0.5s;
+    --width: clamp(40px, 12vmin, 65px);
+    --height: calc(var(--width) / 2);
+    --ar: 2 / 1;
+    --ray: hsl(0 0% 100% / 0.5);
+    --sun: hsl(47, 91%, 58%);
+    --moon: hsl(212, 13%, 82%);
+    --crater: hsl(221, 16%, 68%);
+    --bg: hsl(219, 30%, 88%);
+    --bear-speed: 10s;
+    --color: hsl(219 30% 20%);
+}
+
+[data-theme="dark"] {
+    --bg-color: rgba(26, 26, 26, 0.7);
+    --text-color: #ffffff;
+    --header-bg-color: rgba(0, 0, 0, 0.8);
+    --header-text-color: #000000;
+    --button-bg-color: #2980b9;
+    --button-hover-bg-color: #3498db;
+    --note-bg-color: rgba(0, 0, 0, 0.5);
+    --modal-bg-color: rgba(44, 62, 80, 0.8);
+    --input-border-color: #555555;
+    --bg-image: url('imgs/cool-background (2).png');
+    --note-text-color: #ffffff;
+    --bg: hsl(219, 30%, 12%);
+    --color: hsl(219 30% 98%);
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--text-color);
+    position: relative;
+    min-height: 100vh;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 0.5s ease;
+}
+
+header {
+    background-color: rgba(52, 152, 219, 0.7); /* 默认的半透明蓝色 */
+    color: var(--header-text-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
+    box-sizing: border-box;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background-color 0.3s ease, color 0.3s ease; /* 添加颜色过渡效果 */
+    z-index: 999; /* 确保 header 在大多数元素之上，但在下拉菜单之下 */
+}
+
+/* 为黑夜模式添加特定的 header 样式 */
+[data-theme="dark"] header {
+    background-color: rgba(44, 62, 80, 0.7); /* 深色半透明背景 */
+    color: #ffffff; /* 将文字颜色改为白色 */
+}
+
+/* 确保题文字在黑夜模式下也是白色 */
+[data-theme="dark"] header h1 {
+    color: #ffffff;
+}
+
+/* 如果有其他需要在黑夜模式下变为白色的元素，也可以在这里添加 */
+[data-theme="dark"] .header-buttons button {
+    color: #ffffff;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 500;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 15px;
+    position: relative;
+    z-index: 1000; /* 确保按钮在其他元素之上 */
+    align-items: center; /* 添加这行以垂直居中对齐按钮 */
+}
+
+.header-buttons.left {
+    justify-content: flex-start;
+}
+
+.header-buttons.right {
+    justify-content: flex-end;
+}
+
+.header-buttons button,
+.dropdown {
+    height: 40px; /* 设置一个固定的高度 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-buttons button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--header-text-color);
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+    padding: 5px;
+    margin-left: 10px;
+}
+
+.header-buttons button:hover {
+    color: var(--button-hover-bg-color);
+    transform: scale(1.1);
+}
+
+#exportBtn, #importBtn, #addNoteBtn {
+    width: 40px; /* 设置一个固定的宽度 */
+    font-size: 1.2rem;
+    padding: 0;
+    margin: 0;
+}
+
+main {
+    padding: 0;
+    max-width: none;
+}
+
+.note {
+    position: relative;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 33px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+    background-color: transparent;
+    cursor: move;
+    transition: transform 0.2s;
+}
+
+.note.dragging {
+    opacity: 0.5;
+    transform: scale(1.05);
+}
+
+.glass-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 33px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background-color: var(--note-bg-color);
+    box-shadow: rgba(0, 0, 0, 0.3) 2px 8px 8px;
+    border: 0px rgba(255,255,255,0.4) solid;
+    border-bottom: 0px rgba(40,40,40,0.35) solid;
+    border-right: 0px rgba(40,40,40,0.35) solid;
+    z-index: 0;
+}
+
+.note:hover {
+    transform: translateY(-5px);
+    box-shadow: rgba(0, 0, 0, 0.4) 2px 10px 12px;
+}
+
+.note h3, .note p, .note button {
+    position: relative;
+    z-index: 1;
+    color: #333;
+}
+
+.note-preview {
+    position: relative;
+    z-index: 1;
+}
+
+.note-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out, padding-top 0.3s ease-out;
+    opacity: 0;
+    margin-top: 0;
+    padding-top: 0;
+    position: relative;
+    z-index: 1;
+    background-color: transparent;
+    border-radius: 16px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.note-content.expanded {
+    max-height: 1000px; /* 设置一个足够大的值 */
+    opacity: 1;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    transition: max-height 0.5s ease-in, opacity 0.5s ease-in, margin-top 0.5s ease-in, padding-top 0.5s ease-in;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: var(--modal-bg-color);
+    margin: 10% auto;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+}
+
+.modal-content h2 i {
+    margin-right: 0.5rem;
+}
+
+#noteTitle {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--input-border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+#todoList {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.todo-item input[type="text"],
+.todo-item input[type="datetime-local"] {
+    flex: 1;
+    margin-right: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--input-border-color);
+    border-radius: 4px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.todo-item button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#addTodoBtn, #saveNoteBtn, #closeModalBtn {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    background-color: rgba(52, 152, 219, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+#addTodoBtn:hover, #saveNoteBtn:hover, #closeModalBtn:hover {
+    background-color: rgba(41, 128, 185, 0.8);
+}
+
+#addTodoBtn {
+    background-color: #2ecc71;
+    color: white;
+}
+
+#addTodoBtn:hover {
+    background-color: #27ae60;
+}
+
+#saveNoteBtn {
+    background-color: #3498db;
+    color: white;
+}
+
+#saveNoteBtn:hover {
+    background-color: #2980b9;
+}
+
+#closeModalBtn {
+    background-color: #95a5a6;
+    color: white;
+}
+
+#closeModalBtn:hover {
+    background-color: #7f8c8d;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-buttons button {
+    flex: 1;
+    margin: 0 0.5rem;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(221, 221, 221, 0.5);
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+textarea {
+    height: 150px;
+    resize: vertical;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #addNoteBtn {
+        margin-top: 1rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
+}
+
+.note-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.edit-btn, .delete-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 5px;
+}
+
+.edit-btn {
+    color: var(--button-bg-color);
+}
+
+.edit-btn:hover {
+    color: var(--button-hover-bg-color);
+}
+
+.delete-btn {
+    color: #e74c3c;
+}
+
+.delete-btn:hover {
+    color: #c0392b;
+}
+
+#toggleThemeBtn, #addNoteBtn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--header-text-color);
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+    padding: 5px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#toggleThemeBtn:hover, #addNoteBtn:hover {
+    color: var(--button-hover-bg-color);
+    transform: scale(1.1);
+}
+
+[data-theme="dark"] #toggleThemeBtn .fa-moon {
+    display: none;
+}
+
+[data-theme="dark"] #toggleThemeBtn::after {
+    content: "\f185";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+
+[data-theme="light"] #toggleThemeBtn .fa-moon {
+    display: inline-block;
+}
+
+.note h3, .note p, .note-content {
+    position: relative;
+    z-index: 1;
+    color: var(--note-text-color);
+}
+
+.note-content * {
+    color: var(--note-text-color);
+}
+
+/* 在件末尾添加以下样式 */
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+#saveNoteBtn, #closeModalBtn {
+    flex: 1;
+    margin: 0 0.5rem;
+}
+
+#closeModalBtn {
+    background-color: #95a5a6;
+    color: white;
+}
+
+#closeModalBtn:hover {
+    background-color: #7f8c8d;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.todo-item:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.todo-item-left {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.todo-item-left i {
+    margin-right: 15px; /* 增加图标和文字之间的距离 */
+    font-size: 1.2em; /* 可以适当增大图标大小 */
+}
+
+.todo-item-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
+
+.todo-text {
+    font-weight: bold;
+    margin-right: 10px;
+    flex-grow: 1;
+}
+
+.todo-deadline {
+    font-size: 0.9em;
+    color: var(--note-text-color);
+    opacity: 0.7;
+    margin-right: 10px;
+}
+
+.countdown {
+    font-size: 0.9em;
+    color: var(--note-text-color);
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.countdown.urgent {
+    color: #fff;
+    background-color: #e74c3c;
+}
+
+.todo-item.completed {
+    opacity: 0.6;
+    background-color: rgba(0, 255, 0, 0.2) !important; /* 使用 !important 确保完成状态背景色最高 */
+}
+
+.todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: var(--note-text-color);
+    opacity: 0.6;
+}
+
+.todo-list {
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+    position: relative;
+}
+
+.todo-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.todo-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.todo-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.todo-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.note h3 {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem; /* 增大字体大小 */
+    margin-bottom: 15px; /* 增加底部边距 */
+    color: var(--note-text-color);
+    font-weight: 600; /* 稍微加粗 */
+}
+
+.note h3::after {
+    content: '\25BC';
+    font-size: 0.7em; /* 相对于增大后的标题字体调整箭头大小 */
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+}
+
+.note .note-content.expanded + h3::after {
+    transform: rotate(180deg);
+}
+
+.announcement {
+    background-color: rgba(231, 76, 60, 0.7);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 60px auto 20px;
+    width: 100%;
+    max-width: 1300px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease, max-height 0.5s ease, opacity 0.5s ease;
+    overflow: hidden;
+    max-height: 1000px;
+    opacity: 1;
+    box-sizing: border-box;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.announcement.no-todos {
+    background-color: rgba(46, 204, 113, 0.7);
+    max-height: 60px;
+    opacity: 0.8;
+}
+
+.announcement h2 {
+    margin-top: 0;
+    color: #ffffff;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    transition: margin-bottom 0.5s ease;
+}
+
+.announcement.no-todos h2 {
+    margin-bottom: 0;
+}
+
+#urgentTodos {
+    transition: opacity 0.5s ease, max-height 0.5s ease;
+    max-height: 1000px;
+    opacity: 1;
+}
+
+.announcement.no-todos #urgentTodos {
+    max-height: 0;
+    opacity: 0;
+}
+
+.urgent-todo {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.urgent-todo-text {
+    flex-grow: 1;
+    font-weight: bold;
+    font-size: 1.2rem; /* 保持字体大小 */
+    color: #000000; /* 将颜色改为黑色 */
+}
+
+.urgent-todo-countdown {
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+[data-theme="dark"] .announcement {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .announcement.no-todos {
+    background-color: rgba(39, 174, 96, 0.7); /* 深色模式下的绿色 */
+}
+
+/* 更新 .todo-item 样式 */
+.todo-item {
+    transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.3s ease;
+}
+
+/* 更新 .todo-list 样式 */
+.todo-list {
+    position: relative;
+}
+
+/* 添加新的样式用于动画 */
+.todo-item-animated {
+    transition: transform 0.3s ease;
+}
+
+.todo-item.moving {
+    transition: none;
+    z-index: 2;
+}
+
+.main-content {
+    display: flex;
+    max-width: 1300px; /* 增加最大宽度 */
+    width: 100%;
+    margin: 20px 0;
+    gap: 30px; /* 增加间隔 */
+    box-sizing: border-box;
+}
+
+.left-content {
+    flex: 1;
+    max-width: calc(100% - 350px); /* 增加右侧边栏的空间 */
+}
+
+.right-sidebar {
+    width: 320px; /* 稍微增加宽度 */
+    background-color: var(--note-bg-color);
+    border-radius: 8px;
+    padding: 15px;
+    height: calc(100vh - 150px);
+    position: sticky;
+    top: 20px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.right-sidebar h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--text-color);
+}
+
+#allTodosList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.all-todo-item {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    padding: 12px; /* 稍微增加内边距 */
+    font-size: 0.9rem;
+    margin-bottom: 10px; /* 增加项目之间的间距 */
+    transition: background-color 0.3s ease; /* 添加过渡效果 */
+}
+
+.all-todo-item:hover {
+    background-color: rgba(255, 255, 255, 0.4); /* 添加悬停效果 */
+}
+
+.all-todo-item .note-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1.2rem; /* 增大字体大小 */
+    color: var(--note-text-color); /* 确保颜色与主题一致 */
+}
+
+.all-todo-item .todo-text {
+    margin-bottom: 5px;
+    font-size: 1rem; /* 稍微增大待办事项文本 */
+}
+
+.all-todo-item .todo-deadline {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+/* 调整现有样式以适应新布局 */
+main {
+    padding: 0;
+    max-width: none;
+}
+
+.announcement {
+    margin: 0 0 20px 0;
+}
+
+body > .announcement {
+    margin-top: 40px !important;
+}
+
+.confetti {
+   max-width: 100%;
+   display: block;
+   margin: 0 auto;
+   user-select: none;
+   -webkit-user-select: none; /* 支持 Safari 3+ */
+   position: fixed;
+   top: 0;
+   left: 0;
+   z-index: 9999;
+   pointer-events: none;
+}
+
+#canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.toggle {
+    -webkit-tap-highlight-color: transparent;
+    width: var(--width);
+    height: var(--height);
+    aspect-ratio: var(--ar);
+    border-radius: 100vh;
+    border: 0;
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background var(--speed) var(--easing);
+    background: hsl(
+        calc(204 + (var(--dark, 0) * 25))
+        calc((53 - (var(--dark, 0) * 28)) * 1%)
+        calc((47 - (var(--dark, 0) * 31)) * 1%)
+    );
+    box-shadow:
+        calc(var(--width) * 0) calc(var(--width) * 0.02) calc(var(--width) * 0.01) calc(var(--width) * -0.0025) hsl(210 10% 100% / 0.95),
+        calc(var(--width) * 0) calc(var(--width) * -0.02) calc(var(--width) * 0.01) calc(var(--width) * -0.0025) hsl(210 10% 10% / 0.2),
+        calc(var(--width) * 0) calc(var(--width) * 0.02) calc(var(--width) * 0.5) 0 hsl(210 10% 100% / 0.15);
+}
+
+.toggle__content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    border-radius: 100vh;
+    display: block;
+}
+
+.toggle__backdrop {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    transition: translate var(--speed) var(--easing);
+    translate: 0 calc(var(--dark, 0) * (100% - (3 / 8 * 100%)));
+}
+
+.toggle__indicator-wrapper {
+    position: absolute;
+    inset: 0;
+    transition: translate var(--speed) var(--slide-ease);
+    translate: calc(var(--dark, 0) * (100% - (3 / 8 * 100%))) 0;
+}
+
+.toggle__indicator {
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    padding: 3%;
+}
+
+.toggle__star {
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    position: relative;
+    transition: translate var(--speed) var(--easing);
+    translate: calc((var(--dark, 0) * -10%) + 5%) 0;
+}
+
+.sun, .moon {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    transition: opacity var(--speed) ease-in-out, transform var(--speed) ease-in-out;
+}
+
+.sun {
+    background: var(--sun);
+    opacity: calc(1 - var(--dark, 0));
+    transform: scale(calc(1 - var(--dark, 0)));
+}
+
+.moon {
+    background: var(--moon);
+    opacity: var(--dark, 0);
+    transform: scale(var(--dark, 0));
+}
+
+.stars {
+    opacity: 0;
+    transition: opacity var(--speed) var(--easing);
+}
+
+[aria-pressed="true"] {
+    --dark: 1;
+}
+
+[aria-pressed="true"] .stars {
+    opacity: 1;
+}
+
+/* 确保文本在半透明背景上清晰见 */
+body, .note h3, .note p, .note-content, .todo-item, .all-todo-item {
+    color: var(--text-color);
+}
+
+/* 添加文本阴影以提高可读性 */
+.note h3, .note p, .todo-item, .all-todo-item {
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+/* 为深色模式添加相应的样式 */
+[data-theme="dark"] .modal-content {
+    background-color: rgba(44, 62, 80, 0.7);
+}
+
+[data-theme="dark"] input, 
+[data-theme="dark"] textarea {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-color: rgba(85, 85, 85, 0.5);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .todo-item {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] #addTodoBtn, 
+[data-theme="dark"] #saveNoteBtn, 
+[data-theme="dark"] #closeModalBtn {
+    background-color: rgba(41, 128, 185, 0.8);
+}
+
+[data-theme="dark"] #addTodoBtn:hover, 
+[data-theme="dark"] #saveNoteBtn:hover, 
+[data-theme="dark"] #closeModalBtn:hover {
+    background-color: rgba(52, 152, 219, 0.8);
+}
+
+[data-theme="dark"] .todo-item {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .todo-item:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .all-todo-item {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .all-todo-item:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .note h3, 
+[data-theme="dark"] .note p, 
+[data-theme="dark"] .todo-item, 
+[data-theme="dark"] .all-todo-item {
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.announcement.no-todos h2 .fa-thumbs-up {
+    font-size: 1.2em; /* 调整图标大小 */
+    color: #4CAF50; /* 调整图标颜色 */
+    margin-left: 10px; /* 给图标添加一些左边距 */
+}
+
+.sortable-container {
+    min-height: 50px;
+}
+
+[data-theme="dark"] .urgent-todo-text {
+    color: #ffffff; /* 在深色模式下使用白色文本 */
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--bg-color);
+    min-width: 120px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1001; /* 增加 z-index 值 */
+    right: 0;
+    top: 100%; /* 确保下拉框在按钮下方 */
+    border-radius: 4px;
+}
+
+.dropdown-content a {
+    color: var(--text-color);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--button-hover-bg-color);
+    color: white;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}

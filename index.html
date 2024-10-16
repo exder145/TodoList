@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全自动DDL催命机</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- 添加 marked.js 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- 使用 SVG 图标 -->
+    <link rel="icon" href="G:\cursor\jishiben\imgs\icon.svg" type="image/svg+xml">
+    <!-- 为不支持 SVG 的浏览器提供后备方案 -->
+    <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="background"></div>
+    <header>
+        <div class="header-buttons left">
+            <button class="toggle" aria-pressed="false" title="Toggle Dark Mode">
+                <span class="toggle__content">
+                    <svg aria-hidden=true class="toggle__backdrop" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 290 228">
+                        <!-- 日间模式的云朵 SVG -->
+                    </svg>
+                    
+                    <svg aria-hidden=true class="toggle__backdrop" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 290 228">
+                        <!-- 夜间模式的云朵 SVG -->
+                    </svg>
+                    <span class="toggle__indicator-wrapper">
+                        <span class="toggle__indicator">
+                            <span class="toggle__star">
+                                <span class="sun"></span>
+                                <span class="moon">
+                                    <span class="moon__crater"></span>
+                                    <span class="moon__crater"></span>
+                                    <span class="moon__crater"></span>
+                                </span>
+                            </span>
+                        </span>
+                    </span>
+                    <svg aria-hidden=true class="toggle__backdrop" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 290 228">
+                        <!-- 星星的 SVG -->
+                    </svg>
+                </span>
+            </button>
+        </div>
+        <h1>全自动DDL催命机</h1>
+        <div class="header-buttons right">
+            <div class="dropdown">
+                <button id="exportBtn" aria-label="导出数据">
+                    <i class="fas fa-file-export"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" id="exportJson">JSON</a>
+                    <a href="#" id="exportMarkdown">Markdown</a>
+                    <a href="#" id="exportImage">图片</a>
+                </div>
+            </div>
+            <button id="importBtn" aria-label="导入数据">
+                <i class="fas fa-file-import"></i>
+            </button>
+            <button id="addNoteBtn" aria-label="添加笔记">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    </header>
+    <div id="announcement" class="announcement">
+        <h2 id="announcementTitle">都几点了还坐得住呢？</h2>
+        <div id="urgentTodos"></div>
+    </div>
+    <div class="main-content">
+        <div class="left-content">
+            <main id="noteContainer" class="sortable-container">
+                <!-- 笔记将在这里动态添加 -->
+            </main>
+        </div>
+        <div class="right-sidebar">
+            <h2>所有待办事项</h2>
+            <div id="allTodosList"></div>
+        </div>
+    </div>
+    <div id="noteModal" class="modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-sticky-note"></i> 新建笔记</h2>
+            <input type="text" id="noteTitle" placeholder="笔记标题">
+            <div id="todoList">
+                <!-- To-Do items will be added here -->
+            </div>
+            <button id="addTodoBtn"><i class="fas fa-plus"></i> 添加待办事项</button>
+            <div class="modal-buttons">
+                <button id="saveNoteBtn"><i class="fas fa-save"></i> 保存笔记</button>
+                <button id="closeModalBtn"><i class="fas fa-times"></i> 取消</button>
+            </div>
+        </div>
+    </div>
+
+    <canvas class="confetti" id="canvas"></canvas>
+    <script src="JavaScript/confetti.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
