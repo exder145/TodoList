@@ -1042,3 +1042,22 @@ body, .note h3, .note p, .note-content, .todo-item, .all-todo-item {
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+.todo-item {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.todo-item.moving {
+    transition: none;
+    opacity: 0.5;
+}
+
+.completed-todos {
+    transition: max-height 0.3s ease;
+    max-height: 1000px; /* 调整为适当的值 */
+    overflow: hidden;
+}
+
+.completed-todos:empty {
+    max-height: 0;
+}

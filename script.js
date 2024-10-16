@@ -220,20 +220,50 @@ function updateTodoStatus(todoItem, completed) {
         todoText.style.opacity = completed ? '0.6' : '1';
     }
     
-    // 更新原始数据
     const noteElement = todoItem.closest('.note');
-    const noteId = noteElement.dataset.id;
-    const note = notes.find(n => n.id === parseInt(noteId));
-    if (note) {
-        const todoIndex = Array.from(todoItem.parentNode.children).indexOf(todoItem);
-        note.todos[todoIndex].completed = completed;
-        saveNotesToLocalStorage();
+    const activeTodoList = noteElement.querySelector('.active-todos');
+    const completedTodoList = noteElement.querySelector('.completed-todos');
+    
+    if (completed) {
+        // 添加过渡类
+        todoItem.classList.add('moving');
+        // 使用 setTimeout 来确保过渡效果生效
+        setTimeout(() => {
+            completedTodoList.appendChild(todoItem);
+            // 移除过渡类
+            setTimeout(() => {
+                todoItem.classList.remove('moving');
+            }, 300); // 与 CSS 过渡时间相匹配
+        }, 10);
+    } else {
+        todoItem.classList.add('moving');
+        setTimeout(() => {
+            activeTodoList.appendChild(todoItem);
+            smoothSort(activeTodoList);
+            setTimeout(() => {
+                todoItem.classList.remove('moving');
+            }, 300);
+        }, 10);
     }
 
+    updateCountdown(todoItem);
     updateAnnouncement();
     updateAllTodosList();
+    
+    // 更新原始数据
+    const noteId = noteElement.dataset.id;
+    if (noteId) {
+        const note = notes.find(n => n.id === parseInt(noteId));
+        if (note) {
+            note.todos = [...Array.from(activeTodoList.children), ...Array.from(completedTodoList.children)].map(todoElement => ({
+                text: todoElement.querySelector('.todo-text').textContent,
+                deadline: todoElement.querySelector('.todo-deadline').textContent,
+                completed: todoElement.classList.contains('completed')
+            }));
+            saveNotesToLocalStorage();
+        }
+    }
 
-    // 触发烟花效果
     if (completed) {
         triggerConfetti();
     }
@@ -482,11 +512,78 @@ function exportAsMarkdown() {
 }
 
 function exportAsImage() {
-    html2canvas(document.body).then(canvas => {
+    // 显示加载指示器
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.textContent = '正在生成图片，请稍候...';
+    loadingIndicator.style.position = 'fixed';
+    loadingIndicator.style.top = '50%';
+    loadingIndicator.style.left = '50%';
+    loadingIndicator.style.transform = 'translate(-50%, -50%)';
+    loadingIndicator.style.padding = '20px';
+    loadingIndicator.style.background = 'rgba(0, 0, 0, 0.7)';
+    loadingIndicator.style.color = 'white';
+    loadingIndicator.style.borderRadius = '10px';
+    loadingIndicator.style.zIndex = '9999';
+    document.body.appendChild(loadingIndicator);
+
+    // 创建一个临时的 div 元素来容纳表格
+    const tempDiv = document.createElement('div');
+    tempDiv.style.padding = '40px';
+    tempDiv.style.background = 'white';
+    tempDiv.style.color = 'black';
+    tempDiv.style.fontFamily = 'Arial, sans-serif';
+
+    // 创建表格
+    let tableHTML = `
+        <h2 style="text-align: center; margin-bottom: 20px;">待办事项列表</h2>
+        <table style="width:100%; border-collapse: separate; border-spacing: 0; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th style="border-bottom: 2px solid #ddd; padding: 12px; text-align: left;">笔记标题</th>
+                    <th style="border-bottom: 2px solid #ddd; padding: 12px; text-align: left;">待办事项</th>
+                    <th style="border-bottom: 2px solid #ddd; padding: 12px; text-align: left;">截止时间</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    notes.forEach(note => {
+        const uncompletedTodos = note.todos.filter(todo => !todo.completed);
+        uncompletedTodos.forEach(todo => {
+            tableHTML += `
+                <tr>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px;">${note.title}</td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px;">${todo.text}</td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px;">${formatDate(todo.deadline)}</td>
+                </tr>
+            `;
+        });
+    });
+
+    tableHTML += '</tbody></table>';
+    tempDiv.innerHTML = tableHTML;
+
+    // 将临时 div 添加到 body
+    document.body.appendChild(tempDiv);
+
+    // 使用 html2canvas 将表格转换为图片
+    html2canvas(tempDiv, {
+        logging: true,
+        useCORS: true,
+        scale: window.devicePixelRatio,
+        backgroundColor: null
+    }).then(canvas => {
         const link = document.createElement('a');
         link.download = 'notes_export.png';
-        link.href = canvas.toDataURL();
+        link.href = canvas.toDataURL('image/png');
         link.click();
+        document.body.removeChild(loadingIndicator);
+        document.body.removeChild(tempDiv);
+    }).catch(error => {
+        console.error('导出图片时发生错误:', error);
+        alert('导出图片失败，请检查控制台以获取更多信息。');
+        document.body.removeChild(loadingIndicator);
+        document.body.removeChild(tempDiv);
     });
 }
 
@@ -502,7 +599,7 @@ function downloadFile(content, fileName, contentType) {
     URL.revokeObjectURL(url);
 }
 
-// 添加这个新��数来触发烟花效果
+// 添加这个新数来触发烟花效果
 function triggerConfetti() {
     if (typeof confetti === 'function') {
         const duration = 3 * 1000;
