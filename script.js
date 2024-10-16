@@ -15,6 +15,9 @@ const exportMarkdown = document.getElementById('exportMarkdown');
 const exportImage = document.getElementById('exportImage');
 const addTodoBtn = document.getElementById('addTodoBtn');
 
+// 导入功能
+const importBtn = document.getElementById('importBtn');
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded and parsed");
     loadNotesFromLocalStorage();
@@ -647,3 +650,53 @@ addTodoBtn.addEventListener('click', () => {
     const newTodoItem = createTodoItem({ text: '', deadline: '', completed: false }, false);
     todoList.appendChild(newTodoItem);
 });
+
+importBtn.addEventListener('click', () => {
+    if (confirm('导入新数据将覆盖现有数据，是否继续？')) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json';
+        input.onchange = (event) => {
+            const file = event.target.files[0];
+            if (file.type !== 'application/json') {
+                alert('请选择 JSON 文件');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedNotes = JSON.parse(e.target.result);
+                    if (Array.isArray(importedNotes)) {
+                        notes = importedNotes;
+                        saveNotesToLocalStorage();
+                        renderNotes();
+                        updateAllTodosList();
+                        alert('数据导入成功！');
+                    } else {
+                        throw new Error('导入的数据不是一个数组');
+                    }
+                } catch (error) {
+                    console.error('Import error:', error);
+                    alert(`导入失败：${error.message}`);
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+});
+
+function convertImportedData(importedNotes) {
+    return importedNotes.map(note => ({
+        id: note.id || Date.now(),
+        title: note.title || '未命名笔记',
+        todos: Array.isArray(note.todos) ? note.todos.map(todo => ({
+            text: todo.text || '',
+            deadline: todo.deadline || '',
+            completed: !!todo.completed
+        })) : []
+    }));
+}
+
+// 在导入成功后使用
+notes = convertImportedData(importedNotes);

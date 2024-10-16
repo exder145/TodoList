@@ -423,22 +423,38 @@ textarea {
     cursor: pointer;
     transition: color 0.3s ease;
     padding: 5px;
+    color: #3498db; /* 默认蓝色 */
 }
 
-.edit-btn {
-    color: var(--button-bg-color);
-}
-
-.edit-btn:hover {
-    color: var(--button-hover-bg-color);
-}
-
-.delete-btn {
-    color: #e74c3c;
-}
-
+.edit-btn:hover,
 .delete-btn:hover {
-    color: #c0392b;
+    color: #ffffff; /* 悬停时变为白色 */
+}
+
+[data-theme="dark"] .edit-btn,
+[data-theme="dark"] .delete-btn {
+    color: #ffffff; /* 默认白色 */
+}
+
+[data-theme="dark"] .edit-btn:hover,
+[data-theme="dark"] .delete-btn:hover {
+    color: #d0d0d0; /* 更亮的灰色 */
+}
+
+/* 移除之前添加的背景色相关样式 */
+.edit-btn,
+.delete-btn {
+    background-color: transparent;
+}
+
+.edit-btn:hover,
+.delete-btn:hover {
+    background-color: transparent;
+}
+
+[data-theme="dark"] .edit-btn:hover,
+[data-theme="dark"] .delete-btn:hover {
+    background-color: transparent;
 }
 
 #toggleThemeBtn, #addNoteBtn {
@@ -534,7 +550,7 @@ textarea {
 
 .todo-item-left i {
     margin-right: 15px; /* 增加图标和文字之间的距离 */
-    font-size: 1.2em; /* 可以适当增大图标大小 */
+    font-size: 1.2em; /* 可以适当大图标大小 */
 }
 
 .todo-item-right {
@@ -690,7 +706,7 @@ textarea {
     flex-grow: 1;
     font-weight: bold;
     font-size: 1.2rem; /* 保持字体大小 */
-    color: #000000; /* 将颜色改为黑色 */
+    color: #000000; /* 将颜色改黑色 */
 }
 
 .urgent-todo-countdown {
@@ -1060,4 +1076,61 @@ body, .note h3, .note p, .note-content, .todo-item, .all-todo-item {
 
 .completed-todos:empty {
     max-height: 0;
+}
+
+/* 默认图标颜色 */
+.header-buttons button,
+.note-buttons button {
+    color: var(--header-text-color);
+}
+
+/* 黑夜模式下的图标颜色 */
+[data-theme="dark"] .header-buttons button,
+[data-theme="dark"] .note-buttons button {
+    color: #ffffff;
+}
+
+/* 特别指定添加笔记按钮 */
+[data-theme="dark"] #addNoteBtn {
+    color: #ffffff;
+}
+
+/* 特别指定编辑和删除按钮 */
+[data-theme="dark"] .edit-btn,
+[data-theme="dark"] .delete-btn {
+    color: #ffffff;
+}
+
+/* 如果需要，可以为悬停状态设置不同的颜色 */
+[data-theme="dark"] .header-buttons button:hover,
+[data-theme="dark"] .note-buttons button:hover,
+[data-theme="dark"] #addNoteBtn:hover,
+[data-theme="dark"] .edit-btn:hover,
+[data-theme="dark"] .delete-btn:hover {
+    color: #d0d0d0; /* 更亮的灰色 */
+}
+
+/* 白天模式下的编辑和删除按钮颜色 */
+.note .note-buttons .edit-btn,
+.note .note-buttons .delete-btn {
+    color: #ffffff !important; /* 初始状态为白色 */
+    transition: color 0.3s ease;
+}
+
+/* 白天模式下的编辑和删除按钮悬停颜色 */
+.note .note-buttons .edit-btn:hover,
+.note .note-buttons .delete-btn:hover {
+    color: #3498db !important; /* 悬停时变为蓝色 */
+}
+
+/* 保持黑夜模式下的颜色为白色 */
+[data-theme="dark"] .edit-btn,
+[data-theme="dark"] .delete-btn {
+    color: #ffffff;
+}
+
+/* 黑夜模式下的悬停颜色 */
+[data-theme="dark"] .edit-btn:hover,
+[data-theme="dark"] .delete-btn:hover {
+    color: #d0d0d0; /* 更亮的灰色 */
 }
